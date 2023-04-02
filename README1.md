@@ -43,6 +43,9 @@ NUS ME5413 autonomous mobile robotics final project
 
 ## Installation
 
+Note: Before you start this work, please install ROS. Installation the ROS following the Installation/Upgrade in [ROS](http://wiki.ros.org/noetic/Installation/Ubuntu)
+
+
 This repo is a ros workspace, containing three rospkgs:
 
 * `interactive_tools` are customized tools to interact with gazebo and your robot
@@ -51,15 +54,59 @@ This repo is a ros workspace, containing three rospkgs:
 
 ### Installation of the ME5413_Final_Project
 
-  Installation the ME5413_final_project following the Installation/Upgrade in (https://github.com/leslie9656/ME5413_Final_Project.git)
+After forking this repo to your own github:
 
+```bash
+cd
+git clone https://github.com/<YOUR_GITHUB_USERNAME>/ME5413_Final_Project.git
+cd ME5413_Final_Project
+
+#update
+sudo apt update
+
+# Install all dependencies
+rosdep install --from-paths src --ignore-src -r -y
+
+# Build
+catkin_make
+# Source 
+source devel/setup.bash
+```
+
+To properly load the gazebo world, you will need to have the necessary model files in the `~/.gazebo/models/` directory.
+
+There are two sources of models needed:
+
+* [Gazebo official models](https://github.com/osrf/gazebo_models)
+  
+  ```bash
+  # Create the destination directory
+  cd
+  mkdir -p .gazebo/models
+
+  # Clone the official gazebo models repo (assuming home here `~/`)
+  git clone https://github.com/osrf/gazebo_models.git
+
+  # Copy the models into the `~/.gazebo/models` directory
+  cp -r ~/gazebo_models/* ~/.gazebo/models
+  ```
+
+* [Our customized models](https://github.com/NUS-Advanced-Robotics-Centre/ME5413_Final_Project/tree/main/src/me5413_world/models)
+
+  ```bash
+  # Copy the customized models into the `~/.gazebo/models` directory
+  cp -r ~/ME5413_Final_Project/src/me5413_world/models/* ~/.gazebo/models
+  ```
+  
 ### Installation of EVO
   
-  Installation the Evo tool following the Installation/Upgrade in (https://github.com/MichaelGrupp/evo)
+  Installation the Evo tool following the Installation/Upgrade in [EVO](https://github.com/MichaelGrupp/evo)
 
   Note: If the evo command like evo_ape can not be used after installation, restarting your computer may deal with the problem.
 
 ## Usage
+
+### Gazebo world
 
   Type followed code in terminal:
 
@@ -70,8 +117,10 @@ This repo is a ros workspace, containing three rospkgs:
  cd ME5413_Final_Project
  source devel/setup.bash
  roslaunch me5413_world world.launch
- 
+
 ```
+
+### Mapping
 
 Then open second terminal:
 
@@ -81,7 +130,6 @@ cd
 cd ME5413_Final_Project
 source devel/setup.bash
 roslaunch me5413_world mapping.launch
-
 ```
 
 You can control the robot when you keep the second terminal open.
@@ -89,7 +137,6 @@ Or you can input code at another terminal:
 
 ```bash
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py
-
 ```
 
 Then you can record the process of movement at new terminal:
@@ -100,7 +147,6 @@ Then you can record the process of movement at new terminal:
 # sensor1 and sensor2 are sensors you want to record
 cd
 rosbag record -O my_data.bag /sensor1 /sensor2
-
 ```
 
 After you finishing mapping, run the following command in the third terminal to save the map:
@@ -108,7 +154,6 @@ After you finishing mapping, run the following command in the third terminal to 
 ```bash
 roscd me5413_world/maps/
 rosrun map_server map_saver -f my_map map:=/map
-
 ```
 Then you return the terminal of recording, click ctrl+c and save bag. The bag should save at you /home. 
 
@@ -119,21 +164,22 @@ Then you can open the EVO:
 ```bash
 # <bag_file> is your bag name, and <topic_name> is the topic you use, like laser_scan. 
 evo_traj bag <bag_file> <topic_name>
-
 ```
+
+### Navigation
 
 Open new terminal or keep second terminal:
 
 ```bash
 # Start the navigation
 roslaunch me5413_world navigation.launch
-
 ```
 
 ## Improvement of project
 
 ### 1. Improvement of Mapping
 Like the second test, we obtain the new data by the 3D-lidar (project to 2D-lidar) and new imu sensor and record them into 3333.bag. In this test, the RMSE is 0.336, which is the smallest among three tests. The victual result show that the whole trajectory is most accurate. 
+
 
 ### 2. Improvement of navigation
 
